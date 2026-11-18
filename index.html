@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#111214" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Vesper — Mobile Chat & Voice Client</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Desktop Preview Header Bar (Hidden on mobile viewports) -->
+  <header class="desktop-frame-toolbar" aria-label="Simulator Controls">
+    <div class="toolbar-brand">
+      <span class="vesper-logo-badge">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/>
+        </svg>
+      </span>
+      <strong>Vesper Mobile</strong>
+      <span class="toolbar-badge">Phase 1 • 3-Panel Core</span>
+    </div>
+    <div class="toolbar-actions">
+      <button type="button" class="toolbar-btn" id="btnSimLeft" title="Open Left Navigation Drawer">Left Drawer</button>
+      <button type="button" class="toolbar-btn active" id="btnSimCenter" title="Focus Center Chat Panel">Center Chat</button>
+      <button type="button" class="toolbar-btn" id="btnSimRight" title="Open Right Context Drawer">Right Drawer</button>
+      <button type="button" class="toolbar-btn danger" id="btnResetState" title="Reset localStorage to Default Seed">Reset State</button>
+    </div>
+  </header>
+
+  <!-- Mobile Device Viewport Shell -->
+  <div class="device-shell" id="deviceShell">
+    <!-- iOS/Android Status Bar Simulation -->
+    <div class="mobile-status-bar">
+      <span class="status-time" id="statusBarTime">9:41</span>
+      <div class="status-Notch"></div>
+      <div class="status-icons">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M1 11h2v3H1v-3zm4-3h2v6H5V8zm4-3h2v9H9V5zm4-3h2v12h-2V2z"/></svg>
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M8 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-3.6-2.9a5.2 5.2 0 0 1 7.2 0l1.1-1.1a6.8 6.8 0 0 0-9.4 0l1.1 1.1zm-2.3-2.3a8.5 8.5 0 0 1 11.8 0L15 7.2a10 10 0 0 0-14 0l1.1 1.1z"/></svg>
+        <span class="battery-pill">100</span>
+      </div>
+    </div>
+
+    <!-- 3-PANEL GESTURE VIEWPORT -->
+    <div class="vesper-viewport state-center" id="vesperViewport">
+
+      <!-- =========================================================
+           1. LEFT PANEL: NAVIGATION DRAWER (72px Server Rail + 240px Channel List)
+           ========================================================= -->
+      <aside class="panel-left" id="panelLeft" aria-label="Servers and Channels Navigation">
+        <div class="left-drawer-main" id="leftDrawerServersView">
+          <!-- 72px Vertical Server Rail -->
+          <nav class="server-rail" id="serverRail" aria-label="Server List">
+            <!-- Populated dynamically by index.js -->
+          </nav>
+
+          <!-- 240px Channel List Drawer -->
+          <div class="channel-drawer" id="channelDrawer">
+            <!-- Server Banner & Dropdown Header -->
+            <div class="server-header-banner" id="serverHeaderBanner">
+              <div class="server-banner-overlay"></div>
+              <div class="server-header-bar" id="serverHeaderBar" role="button" tabindex="0">
+                <div class="server-title-row">
+                  <span class="verified-icon" id="serverVerifiedBadge" title="Verified Vesper Server">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M12 2L14.8 4.5L18.5 4.2L19.5 7.8L22.5 10L21.2 13.5L22.5 17L19.5 19.2L18.5 22.8L14.8 22.5L12 25L9.2 22.5L5.5 22.8L4.5 19.2L1.5 17L2.8 13.5L1.5 10L4.5 7.8L5.5 4.2L9.2 4.5L12 2Z" transform="scale(0.88) translate(1.5, 0.5)"/>
+                      <path d="M10.2 15.6L6.8 12.2L8.2 10.8L10.2 12.8L15.4 7.6L16.8 9L10.2 15.6Z" fill="#fff"/>
+                    </svg>
+                  </span>
+                  <h1 class="server-name-text" id="activeServerName">Vesper Core HQ</h1>
+                </div>
+                <button type="button" class="server-menu-chevron" aria-label="Server Options">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <div class="server-sub-actions">
+                <button type="button" class="channel-search-pill" id="btnChannelQuickSearch">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+                  </svg>
+                  <span>Search or jump to...</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable Categories & Channels Tree -->
+            <div class="channel-tree-scroll" id="channelTreeScroll">
+              <!-- Populated dynamically by index.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Tab Views when switching Bottom Nav Tabs (Messages / Notifications / You previews) -->
+        <div class="left-drawer-alt-view hidden" id="leftDrawerAltView">
+          <!-- Populated dynamically when user taps Messages, Notifications, or You in Bottom Nav -->
+        </div>
+      </aside>
+
+      <!-- =========================================================
+           2. RIGHT PANEL: CONTEXT DRAWER (Channel Info, Pins/Threads, Role-Hoisted Members)
+           ========================================================= -->
+      <aside class="panel-right" id="panelRight" aria-label="Channel Details and Member List">
+        <header class="context-drawer-header">
+          <div class="context-channel-title">
+            <span class="context-hash" id="contextChannelIcon">#</span>
+            <h2 id="contextChannelName">mobile-architecture</h2>
+          </div>
+          <p class="context-channel-topic" id="contextChannelTopic"></p>
+
+          <!-- Context Sub-Tabs (Members / Pins / Threads) -->
+          <div class="context-tabs-bar" role="tablist">
+            <button type="button" class="context-tab active" data-context-tab="members" role="tab">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <span>Members</span>
+            </button>
+            <button type="button" class="context-tab" data-context-tab="pins" role="tab">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
+              <span>Pins</span>
+              <span class="tab-count-pill" id="contextPinsCount">0</span>
+            </button>
+            <button type="button" class="context-tab" data-context-tab="threads" role="tab">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>Threads</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="context-drawer-body" id="contextDrawerBody">
+          <!-- Populated dynamically with Role-Hoisted Members, Pinned Messages, or Active Threads -->
+        </div>
+      </aside>
+
+      <!-- =========================================================
+           3. CENTER PANEL: MAIN CHAT VIEW (Slides over Left & Right Drawers)
+           ========================================================= -->
+      <main class="panel-center" id="panelCenter" aria-label="Main Chat View">
+        <!-- Tap-to-close Dimmer Overlay when Left or Right Drawer is open -->
+        <div class="center-panel-shield" id="centerPanelShield" aria-hidden="true"></div>
+
+        <!-- Sticky Top Channel Header -->
+        <header class="chat-top-header" id="chatTopHeader">
+          <div class="chat-header-left">
+            <button type="button" class="header-icon-btn" id="btnToggleLeftDrawer" aria-label="Open Navigation Drawer">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="16" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+              <span class="header-unread-dot hidden" id="headerGlobalUnreadDot"></span>
+            </button>
+
+            <div class="header-channel-identity" id="headerChannelIdentity" role="button" tabindex="0">
+              <span class="header-channel-hash" id="headerChannelHash">#</span>
+              <div class="header-channel-text-wrap">
+                <span class="header-channel-name" id="headerChannelName">mobile-architecture</span>
+                <span class="header-server-sub" id="headerServerSub">Vesper Core HQ</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-header-actions">
+            <button type="button" class="header-icon-btn" id="btnHeaderThreads" title="Active Threads" aria-label="Threads">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </button>
+            <button type="button" class="header-icon-btn" id="btnHeaderPins" title="Pinned Messages" aria-label="Pinned Messages">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+              </svg>
+            </button>
+            <button type="button" class="header-icon-btn" id="btnToggleRightDrawer" title="Member List" aria-label="Open Member List Drawer">
+              <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Scrollable Message Feed -->
+        <section class="message-feed-container" id="messageFeedContainer" aria-live="polite">
+          <div class="message-feed-list" id="messageFeedList">
+            <!-- Populated dynamically with channel welcome banner, date dividers, and grouped messages -->
+          </div>
+        </section>
+
+        <!-- Contextual Reply / Edit Banner (Sits directly above the Bottom Chat Bar) -->
+        <div class="composer-context-banner hidden" id="composerContextBanner">
+          <div class="composer-context-info">
+            <span class="context-mode-badge" id="composerContextMode">Replying to</span>
+            <strong class="context-target-author" id="composerContextTarget">@Sara Chen</strong>
+          </div>
+          <button type="button" class="composer-context-close" id="btnCancelComposerContext" aria-label="Cancel Reply">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sticky Bottom Chat Bar -->
+        <footer class="chat-bottom-composer" id="chatBottomComposer">
+          <button type="button" class="composer-circle-btn" id="btnAttachmentPlus" title="Insert Markdown Sample / Attachment" aria-label="Add Attachment or Formatting Preset">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+
+          <div class="composer-pill-box">
+            <textarea
+              id="chatMessageInput"
+              class="composer-textarea"
+              rows="1"
+              placeholder="Message #mobile-architecture"
+              aria-label="Message Input"
+            ></textarea>
+            <button type="button" class="composer-inline-emoji-btn" id="btnInsertQuickEmoji" title="Insert Emoji" aria-label="Emoji">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="2.5"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="2.5"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Dynamic Mic / Send Action Button (Swaps automatically on text input) -->
+          <button type="button" class="composer-action-btn mode-mic" id="btnComposerAction" aria-label="Voice Message or Send Message">
+            <!-- Mic Icon (Default when input is empty) -->
+            <svg class="icon-mic" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
+            </svg>
+            <!-- Send Paper Plane Icon (Active when input has text) -->
+            <svg class="icon-send" viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+              <path d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
+            </svg>
+          </button>
+        </footer>
+      </main>
+    </div>
+
+    <!-- =========================================================
+         4. PERSISTENT BOTTOM NAVIGATION TAB BAR
+         (Visible when Left Drawer is open; automatically hides when Center Chat is active)
+         ========================================================= -->
+    <nav class="bottom-tab-bar hidden-bar" id="bottomTabBar" aria-label="Primary App Navigation">
+      <button type="button" class="bottom-tab-item active" data-nav-tab="servers">
+        <div class="tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02z"/>
+          </svg>
+          <span class="tab-ping-badge" id="navServersBadge">3</span>
+        </div>
+        <span class="tab-label">Servers</span>
+      </button>
+
+      <button type="button" class="bottom-tab-item" data-nav-tab="messages">
+        <div class="tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM7 9h10v2H7V9zm6 5H7v-2h6v2zm4-6H7V6h10v2z"/>
+          </svg>
+          <span class="tab-ping-badge">1</span>
+        </div>
+        <span class="tab-label">Messages</span>
+      </button>
+
+      <button type="button" class="bottom-tab-item" data-nav-tab="notifications">
+        <div class="tab-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+          </svg>
+        </div>
+        <span class="tab-label">Notifications</span>
+      </button>
+
+      <button type="button" class="bottom-tab-item" data-nav-tab="you">
+        <div class="tab-icon-wrap tab-you-avatar-wrap">
+          <span class="tab-you-avatar" id="bottomNavUserAvatar">AR</span>
+          <span class="status-cutout-dot status-online" id="bottomNavStatusDot"></span>
+        </div>
+        <span class="tab-label">You</span>
+      </button>
+    </nav>
+
+    <!-- Toast Notification Banner -->
+    <div class="vesper-toast hidden" id="vesperToast"></div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
